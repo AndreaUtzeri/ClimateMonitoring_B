@@ -46,7 +46,7 @@ public class Operatore {
 	    	String user = sc.nextLine();
 	    	System.out.println("Inserisci una password da associare al tuo account.");
 	    	String pass = sc.nextLine();
-	        remote.registerUser(user, pass);
+	        System.out.println(remote.registerUser(user, pass));
 	        break;
 	      case "3":
 	    	System.out.println("Inserisci il tuo nome utente.");
@@ -54,11 +54,13 @@ public class Operatore {
 	    	System.out.println("Inserisci la tua password.");
 	    	String userpass = sc.nextLine();
 	        id=remote.loginUser(userlog, userpass);
+	        if(!id.equals("")) System.out.println("login avvenuto con successo");
+	        else System.out.println("credenziali errate");
 	        break;
 	      case "4":
 	        if (!id.equals("")){
 	          id = null;
-	          System.out.print("logout effettuato");
+	          System.out.println("logout effettuato");
 	          break;
 	        }
 	        else {
@@ -81,14 +83,12 @@ public class Operatore {
 	        }
 	      case "6":
 	        if(!id.equals("")){
-		      System.out.println("Inserisci il tuo nome utente.");
-		      String associateuser = sc.nextLine();
-	          System.out.println("Inserisci la tua password.");
-	          String associatepsw = sc.nextLine();
-	          System.out.println("Inserisci il nome del centro di monitoraggio al quale desideri associarti.");
-	          String associatecenter = sc.nextLine();
-	          remote.associaCentro(associateuser, associatecenter);
-	          break;
+		      
+	        	String associateuser = id;
+	        	System.out.println("Inserisci il nome del centro di monitoraggio al quale desideri associarti.");
+	        	String associatecenter = sc.nextLine();
+	        	System.out.println(remote.associaCentro(associateuser, associatecenter));
+	        	break;
 	        }
 	        else{
 	          System.out.println("Non hai effettuato il login");
@@ -96,7 +96,7 @@ public class Operatore {
 	        }
 	      case "7":
 	    	  if(!id.equals("")) {
-	    		  remote.inserisciParametriClimatici(id);
+	    		  System.out.println(remote.inserisciParametriClimatici(id));
 	    		  break;
 	    	  }
 	    	  else {
@@ -104,7 +104,9 @@ public class Operatore {
 	    		  break;
 	    	  }
 	      case "8":
-	    	  //remote.visualizzaAreaGeografica();
+	    	  System.out.println("Inserisci il nome dell'area della quale desideri visualizzare i parametri registrati");
+	          String area = sc.nextLine();
+	    	  System.out.println(remote.visualizzaAreaGeografica(area));
 	    	  break;
 	      default:
 	        System.out.println("comando non valido");
