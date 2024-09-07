@@ -9,12 +9,11 @@ import java.sql.SQLException;
 
 public class Login {
 	// Metodo per autenticare un utente
-    public static String loginUserDelegation(String username, String password) throws RemoteException {
+    public static boolean loginUserDelegation(String username, String password) throws RemoteException {
         // Connessione al database
-        CentroMonitoraggioServer credenziali = new CentroMonitoraggioServer();
-    	String url = credenziali.getdbHost();  //"jdbc:postgresql://localhost:5432/ClimateMonitor";
-        String user = credenziali.getdbUser();  //"postgres";
-        String dbPassword =credenziali.getdbPassword();   //"!sqlpassword";
+        String url = "jdbc:postgresql://localhost:5432/ClimateMonitor";
+        String user = "postgres";
+        String dbPassword = "!sqlpassword";
 
         // Query per verificare le credenziali dell'utente
         String loginQuery = "SELECT * FROM OperatoriRegistrati WHERE username = ? AND password = ?";
@@ -31,15 +30,15 @@ public class Login {
             // Se esiste il dato, il login è valido
             if (rs.next()) {
                 System.out.println("Login avvenuto con successo!");
-                return username;
+                return true;
             } else {
                 System.out.println("Credenziali non valide!");
-                return username;
+                return false;
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return null;
+            return false;
         }
     }
 }

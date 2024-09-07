@@ -9,17 +9,16 @@ import java.sql.SQLException;
 
 public class CercaArea {
 	public static void cercaAreaGeograficaDelegation(boolean cercaPerNome, String denominazione, String coordinate) throws RemoteException {
-		CentroMonitoraggioServer credenziali = new CentroMonitoraggioServer();
-    	String url = credenziali.getdbHost();  //"jdbc:postgresql://localhost:5432/ClimateMonitor";
-        String user = credenziali.getdbUser();  //"postgres";
-        String dbPassword =credenziali.getdbPassword();   //"!sqlpassword";
+        String url = "jdbc:postgresql://localhost:5432/ClimateMonitor";
+        String user = "postgres";
+        String password = "!sqlpassword";
 
         // Query per cercare per denominazione
         String searchByName = "SELECT * FROM CoordinateMonitoraggio WHERE name LIKE ?";
         // Query per cercare per coordinate
         String searchByCoordinates = "SELECT * FROM CoordinateMonitoraggio WHERE coordinates = ?";
 
-        try (Connection conn = DriverManager.getConnection(url, user, dbPassword)) {
+        try (Connection conn = DriverManager.getConnection(url, user, password)) {
             
             if (cercaPerNome) {
                 // Ricerca per denominazione

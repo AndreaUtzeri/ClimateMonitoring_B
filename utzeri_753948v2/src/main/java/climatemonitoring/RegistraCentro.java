@@ -14,14 +14,13 @@ import java.util.Scanner;
 public class RegistraCentro {
 	// Funzione per registrare un centro di monitoraggio
     public static void registraCentroDelegation(String nomeCentro, String indirizzo)throws RemoteException {
-    	CentroMonitoraggioServer credenziali = new CentroMonitoraggioServer();
-    	String url = credenziali.getdbHost();  //"jdbc:postgresql://localhost:5432/ClimateMonitor";
-        String user = credenziali.getdbUser();  //"postgres";
-        String dbPassword =credenziali.getdbPassword();   //"!sqlpassword";
+        String url = "jdbc:postgresql://localhost:5432/ClimateMonitor";
+        String user = "postgres";
+        String password = "!sqlpassword";
 
         String insertCentroQuery = "INSERT INTO CentriMonitoraggio (nome, indirizzo) VALUES (?, ?)";
 
-        try (Connection conn = DriverManager.getConnection(url, user, dbPassword);
+        try (Connection conn = DriverManager.getConnection(url, user, password);
              PreparedStatement insertCentroStmt = conn.prepareStatement(insertCentroQuery)) {
 
             // Inserimento del nuovo centro di monitoraggio

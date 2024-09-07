@@ -9,11 +9,10 @@ import java.sql.SQLException;
 
 public class AssociaCentro {
 	// Metodo per associare un utente a un centro di monitoraggio
-    public static String associaCentroDelegation(String username, String nomeCentro)throws RemoteException {
-    	CentroMonitoraggioServer credenziali = new CentroMonitoraggioServer();
-    	String url = credenziali.getdbHost();  //"jdbc:postgresql://localhost:5432/ClimateMonitor";
-        String user = credenziali.getdbUser();  //"postgres";
-        String dbPassword =credenziali.getdbPassword();   //"!sqlpassword";
+    public static void associaCentroDelegation(String username, String nomeCentro)throws RemoteException {
+        String url = "jdbc:postgresql://localhost:5432/ClimateMonitor";
+        String user = "postgres";
+        String dbPassword = "!sqlpassword";
         
         // Query per verificare se il centro esiste
         String queryCentro = "SELECT nome FROM CentriMonitoraggio WHERE nome = ?";
@@ -38,20 +37,20 @@ public class AssociaCentro {
                 int rowsAffected = stmtAssocia.executeUpdate();
                 
                 if (rowsAffected > 0) {
-                    return "Operatore associato al centro con successo!";
+                    System.out.println("Operatore associato al centro con successo!");
                     
                 } else {
-                    return "Errore: username o password errati.";
+                    System.out.println("Errore: username o password errati.");
                     
                 }
             } else {
-                return "Centro di monitoraggio non trovato.";
+                System.out.println("Centro di monitoraggio non trovato.");
                 
             }
             
         } catch (SQLException e) {
             e.printStackTrace();
-            return "errore";
+            System.out.println("Errore");
         }
     }
 }

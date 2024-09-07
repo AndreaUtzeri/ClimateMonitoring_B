@@ -12,11 +12,10 @@ import java.util.Scanner;
 
 public class InserisciParametri {
 	// Metodo per inserire i parametri climatici per un'area di interesse
-    public static String inserisciParametriClimaticiDelegation(String username) throws RemoteException {
-    	CentroMonitoraggioServer credenziali = new CentroMonitoraggioServer();
-    	String url = credenziali.getdbHost();  //"jdbc:postgresql://localhost:5432/ClimateMonitor";
-        String user = credenziali.getdbUser();  //"postgres";
-        String dbPassword =credenziali.getdbPassword();   //"!sqlpassword";
+    public static void inserisciParametriClimaticiDelegation(String username) throws RemoteException {
+        String url = "jdbc:postgresql://localhost:5432/ClimateMonitor";
+        String user = "postgres";
+        String dbPassword = "!sqlpassword";
 
         Scanner scanner = new Scanner(System.in);
 
@@ -28,7 +27,7 @@ public class InserisciParametri {
                 ResultSet rsCentro = stmtCentro.executeQuery();
 
                 if (!rsCentro.next() || rsCentro.getString("centro") == null) {
-                    return "Errore: non sei associato a nessun centro di monitoraggio.";
+                    System.out.println("Errore: non sei associato a nessun centro di monitoraggio.");
                     
                 }
 
@@ -51,7 +50,7 @@ public class InserisciParametri {
                 }
 
                 if (numColonneAree <= 0) {
-                    return "Errore: non ci sono colonne area disponibili nella tabella CentriMonitoraggio.";
+                    System.out.println("Errore: non ci sono colonne area disponibili nella tabella CentriMonitoraggio.");
                     
                 }
 
@@ -74,7 +73,7 @@ public class InserisciParametri {
                     ResultSet rsArea = stmtArea.executeQuery();
 
                     if (!rsArea.next()) {
-                        return "Errore: quest'area non è associata al centro di monitoraggio " + nomeCentro;
+                        System.out.println("Errore: quest'area non è associata al centro di monitoraggio " + nomeCentro);
                         
                     }
                 }
@@ -125,12 +124,12 @@ public class InserisciParametri {
                     stmtInserisci.setString(11, data); // Aggiungi la data corrente
 
                     stmtInserisci.executeUpdate();
-                    return "Parametri climatici inseriti con successo!";
+                    System.out.println("Parametri climatici inseriti con successo!");
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            return"errore";
+            System.out.println("Errore");
         }
     }
 

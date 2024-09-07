@@ -12,12 +12,11 @@ public class Register {
 	
 	
 	// Metodo per registrare un nuovo utente
-    public static String registerUserDelegation(String username, String password) throws RemoteException {
+    public static boolean registerUserDelegation(String username, String password) throws RemoteException {
         // Connessione al database
-    	CentroMonitoraggioServer credenziali = new CentroMonitoraggioServer();
-    	String url = credenziali.getdbHost();  //"jdbc:postgresql://localhost:5432/ClimateMonitor";
-        String user = credenziali.getdbUser();  //"postgres";
-        String dbPassword =credenziali.getdbPassword();   //"!sqlpassword";
+        String url = "jdbc:postgresql://localhost:5432/ClimateMonitor";
+        String user = "postgres";
+        String dbPassword = "!sqlpassword";
 
         // Query per verificare se l'utente esiste già
         String checkUserQuery = "SELECT COUNT(*) FROM operatoriregistrati WHERE username = ?";
@@ -34,7 +33,8 @@ public class Register {
             ResultSet rs = checkUserStmt.executeQuery();
             rs.next();
             if (rs.getInt(1) > 0) {
-                return "Username già esistente!";
+                System.out.println("Username già esistente!");
+                return false;
                
             }
 
@@ -43,12 +43,14 @@ public class Register {
             insertUserStmt.setString(2, password); 
             insertUserStmt.executeUpdate();
 
-            return "Registrazione avvenuta con successo!";
+            System.out.println("Registrazione avvenuta con successo!");
+            return true;
             
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return "errore";
+            System.out.println("Errore");
+            return false;
         }
     }
 }
