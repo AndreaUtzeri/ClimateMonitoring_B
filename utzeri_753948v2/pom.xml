@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     
     <groupId>com.mycompany</groupId>
@@ -57,7 +57,7 @@
                 </dependencies>
                 <executions>
                     <execution>
-                        <phase>initialize</phase>
+                        <phase>process-resources</phase>
                         <goals>
                             <goal>execute</goal>
                         </goals>
@@ -73,6 +73,45 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- Plugin per creare i JAR per il server e il client -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <id>jar-server</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>utzeri_753948-server</finalName>
+                            <archive>
+                                <manifestEntries>
+                                    <Main-Class>climatemonitoring.CentroMonitoraggioServer</Main-Class>
+                                </manifestEntries>
+                            </archive>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>jar-client</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>utzeri_753948-client</finalName>
+                            <archive>
+                                <manifestEntries>
+                                    <Main-Class>climatemonitoring.Operatore</Main-Class>
+                                </manifestEntries>
+                            </archive>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -81,3 +120,4 @@
         <db.password>!sqlpassword</db.password>
     </properties>
 </project>
+

@@ -23,10 +23,25 @@ public class CentroMonitoraggioServer extends UnicastRemoteObject implements Int
 	
 	public CentroMonitoraggioServer() throws RemoteException{}
 	
-	public void getDbmsCredential(String dbHost, String dbUser, String dbPassword) throws RemoteException {
-        
-    }
+	private String dbHost;
+    private String dbUser;
+    private String dbPassword;
 	
+	public void getDbmsCredential(String dbHost, String dbUser, String dbPassword) throws RemoteException {
+		this.dbHost = dbHost;
+        this.dbUser = dbUser;
+        this.dbPassword = dbPassword;
+        System.out.println("prova per vedere se le credenziali vengono passate");
+    }
+	public String getdbHost() {
+		return dbHost;
+	}
+	public String getdbUser() {
+		return dbUser;
+	}
+	public String getdbPassword() {
+		return dbPassword;
+	}
 	
 	
 	

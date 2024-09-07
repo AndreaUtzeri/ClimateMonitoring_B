@@ -12,6 +12,17 @@ public class Operatore {
 		Registry reg = LocateRegistry.getRegistry();
 		InterfacciaServer remote = (InterfacciaServer)reg.lookup("MonitoringCenter");
 		
+		Scanner scanner = new Scanner(System.in);
+        System.out.print("Inserisci l'host del DB: ");
+        String dbHost = scanner.nextLine();
+        System.out.print("Inserisci l'utente del DB: ");
+        String dbUser = scanner.nextLine();
+        System.out.print("Inserisci la password del DB: ");
+        String dbPassword = scanner.nextLine();
+
+        // Configurazione del database sul server
+        remote.getDbmsCredential(dbHost, dbUser, dbPassword);
+		
 		boolean cond=true;
 	    String id="";
 	    Scanner sc = new Scanner(System.in);

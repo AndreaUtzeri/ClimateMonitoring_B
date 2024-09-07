@@ -13,9 +13,10 @@ import java.util.Scanner;
 public class InserisciParametri {
 	// Metodo per inserire i parametri climatici per un'area di interesse
     public static String inserisciParametriClimaticiDelegation(String username) throws RemoteException {
-        String url = "jdbc:postgresql://localhost:5432/ClimateMonitor";
-        String user = "postgres";
-        String dbPassword = "!sqlpassword";
+    	CentroMonitoraggioServer credenziali = new CentroMonitoraggioServer();
+    	String url = credenziali.getdbHost();  //"jdbc:postgresql://localhost:5432/ClimateMonitor";
+        String user = credenziali.getdbUser();  //"postgres";
+        String dbPassword =credenziali.getdbPassword();   //"!sqlpassword";
 
         Scanner scanner = new Scanner(System.in);
 

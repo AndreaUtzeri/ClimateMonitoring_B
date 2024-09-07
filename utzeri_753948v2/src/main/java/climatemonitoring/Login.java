@@ -11,9 +11,10 @@ public class Login {
 	// Metodo per autenticare un utente
     public static String loginUserDelegation(String username, String password) throws RemoteException {
         // Connessione al database
-        String url = "jdbc:postgresql://localhost:5432/ClimateMonitor";
-        String user = "postgres";
-        String dbPassword = "!sqlpassword";
+        CentroMonitoraggioServer credenziali = new CentroMonitoraggioServer();
+    	String url = credenziali.getdbHost();  //"jdbc:postgresql://localhost:5432/ClimateMonitor";
+        String user = credenziali.getdbUser();  //"postgres";
+        String dbPassword =credenziali.getdbPassword();   //"!sqlpassword";
 
         // Query per verificare le credenziali dell'utente
         String loginQuery = "SELECT * FROM OperatoriRegistrati WHERE username = ? AND password = ?";

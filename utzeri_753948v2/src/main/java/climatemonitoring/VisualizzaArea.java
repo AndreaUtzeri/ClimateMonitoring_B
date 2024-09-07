@@ -1,5 +1,6 @@
 package climatemonitoring;
 
+import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -8,17 +9,20 @@ import java.sql.SQLException;
 
 public class VisualizzaArea {
 	
-	private static final String DB_URL = "jdbc:postgresql://localhost:5432/ClimateMonitor";
-    private static final String USER = "postgres";
-    private static final String PASSWORD = "!sqlpassword";
+	
 
 
-    public static String visualizzaAreaDelegation(String area) {
-        // Query per cercare i dati in base all'area
+    public static String visualizzaAreaDelegation(String area) throws RemoteException {
+    	CentroMonitoraggioServer credenziali = new CentroMonitoraggioServer();
+    	String url = credenziali.getdbHost();  //"jdbc:postgresql://localhost:5432/ClimateMonitor";
+        String user = credenziali.getdbUser();  //"postgres";
+        String dbPassword =credenziali.getdbPassword();   //"!sqlpassword";
+    	
+    	// Query per cercare i dati in base all'area
         String query = "SELECT * FROM parametriclimatici WHERE area = ?";
         String risultato="";
         // Connessione al database
-        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+        try (Connection connection = DriverManager.getConnection(url, user, dbPassword);
              PreparedStatement statement = connection.prepareStatement(query)) {
 
             // Imposta il valore dell'area nel PreparedStatement
