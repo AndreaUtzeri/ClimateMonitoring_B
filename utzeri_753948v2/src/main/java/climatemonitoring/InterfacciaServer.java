@@ -14,5 +14,6 @@ public interface InterfacciaServer extends Remote {
 	 public String associaCentro(String username, String nomeCentro) throws RemoteException;
 	 public String inserisciParametriClimatici(String username)throws RemoteException;
 	 public String visualizzaAreaGeografica(String area)throws RemoteException;
+	 public void getDbmsCredential(String dbHost, String dbUser, String dbPassword) throws RemoteException;
 	 
 }

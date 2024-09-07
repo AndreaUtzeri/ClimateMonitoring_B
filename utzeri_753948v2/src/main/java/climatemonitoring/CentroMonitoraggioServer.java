@@ -23,7 +23,14 @@ public class CentroMonitoraggioServer extends UnicastRemoteObject implements Int
 	
 	public CentroMonitoraggioServer() throws RemoteException{}
 	
-	 // Metodo per registrare un nuovo utente
+	public void getDbmsCredential(String dbHost, String dbUser, String dbPassword) throws RemoteException {
+        
+    }
+	
+	
+	
+	
+	// Metodo per registrare un nuovo utente
     public String registerUser(String username, String password) throws RemoteException {
         return Register.registerUserDelegation(username, password);
     }
