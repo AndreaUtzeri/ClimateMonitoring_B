@@ -12,7 +12,7 @@ public class Register {
 	
 	
 	// Metodo per registrare un nuovo utente
-    public static boolean registerUserDelegation(String username, String password) throws RemoteException {
+    public static boolean registerUserDelegation(String username, String password, ClientInterface callback) throws RemoteException {
         // Connessione al database
         String url = "jdbc:postgresql://localhost:5432/ClimateMonitor";
         String user = "postgres";
@@ -33,7 +33,7 @@ public class Register {
             ResultSet rs = checkUserStmt.executeQuery();
             rs.next();
             if (rs.getInt(1) > 0) {
-                System.out.println("Username già esistente!");
+                callback.registerFailure();
                 return false;
                
             }
@@ -43,7 +43,7 @@ public class Register {
             insertUserStmt.setString(2, password); 
             insertUserStmt.executeUpdate();
 
-            System.out.println("Registrazione avvenuta con successo!");
+            callback.registerSuccess();
             return true;
             
 

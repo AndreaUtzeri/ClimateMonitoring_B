@@ -4,14 +4,16 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
 
-public class Operatore {
+public class Operatore extends UnicastRemoteObject implements ClientInterface {
 
 	
 	private InterfacciaServer remote;
 	private Scanner sc = new Scanner(System.in);
 	boolean id = false;
+	boolean dbcredentials = false;
 	
 	public Operatore() throws RemoteException, NotBoundException {
 		Registry reg = LocateRegistry.getRegistry();
@@ -20,6 +22,10 @@ public class Operatore {
 	
 	public void cercaAreaGeografica() throws RemoteException {
 		
+		if(dbcredentials == false) {
+			System.out.println("Non hai effettuato l'accesso al database.");
+			return;
+		}
 		System.out.println("Desideri effettuare la ricerca dell'area tramite il nome? Digita 'true'. Altrimenti digita 'false'");
     	boolean byname = sc.nextBoolean();
     	System.out.println("Inserisci la denominazione dell'area che vuoi cercare.");
@@ -30,6 +36,10 @@ public class Operatore {
 	}
 	
 	 public void registraCentro() throws RemoteException {
+		 if(dbcredentials == false) {
+				System.out.println("Non hai effettuato l'accesso al database.");
+				return;
+			}
 		 if (id != false){
 	          System.out.println("Inserisci il nome del centro di monitoraggio che desideri registrare al sistema.");
 	          String name = sc.nextLine();
@@ -43,6 +53,10 @@ public class Operatore {
 	}
 	 
 	 public void associaCentro() throws RemoteException{
+		 if(dbcredentials == false) {
+				System.out.println("Non hai effettuato l'accesso al database.");
+				return;
+			}
 		 if(id != false){
 		      System.out.println("Inserisci il tuo nome utente.");
 		      String associateuser = sc.nextLine();
@@ -56,7 +70,11 @@ public class Operatore {
 	        }
 	 }
 	 
-	 public void loginUser() throws RemoteException{
+	 public void loginUser() throws RemoteException, NotBoundException{
+		 if(dbcredentials == false) {
+				System.out.println("Non hai effettuato l'accesso al database.");
+				return;
+			}
 		 System.out.println("Inserisci il tuo nome utente.");
 	    	String userlog = sc.nextLine();
 	    	System.out.println("Inserisci la tua password.");
@@ -65,8 +83,12 @@ public class Operatore {
 	 }
 	 
 	 
-	 public void registerUser() throws RemoteException{
+	 public void registerUser() throws RemoteException, NotBoundException{
 		 
+		 if(dbcredentials == false) {
+				System.out.println("Non hai effettuato l'accesso al database.");
+				return;
+			}
 		 System.out.println("Inserisci il nome utente con il quale desideri registrarti.");
 	    	String user = sc.nextLine();
 	    	System.out.println("Inserisci una password da associare al tuo account.");
@@ -77,6 +99,10 @@ public class Operatore {
 	 
 	 public void inserisciParametriClimatici()throws RemoteException{
 		 
+		 if(dbcredentials == false) {
+				System.out.println("Non hai effettuato l'accesso al database.");
+				return;
+			}
 		 System.out.println("Inserisci il tuo nome utente.");
 		 String username = sc.nextLine();
 		 
@@ -90,6 +116,10 @@ public class Operatore {
 	 }
 	 
 	 public void visualizzaAreaGeografica()throws RemoteException{
+		 if(dbcredentials == false) {
+				System.out.println("Non hai effettuato l'accesso al database.");
+				return;
+			}
 		 System.out.println("Inserisci il nome dell'area della quale desideri visualizzare i parametri climatici registrati.");
 		 String area = sc.nextLine();
 		 remote.visualizzaAreaGeografica(area);
@@ -97,7 +127,37 @@ public class Operatore {
 	 
 	 public void logout() {
 		 id = false;
+		 System.out.println("Logout avvenuto con successo!");
 	 }
+	 
+	 public void registerSuccess() {
+		 System.out.println("Registrazione avvenuta con successo!");
+	 }
+	 
+	 public void loginSuccess() {
+		 System.out.println("Login avvenuto con successo!");
+	 }
+	 
+	 public void getDbmsCredential() throws RemoteException {
+			System.out.println("Inserisci l'host del DB");
+			String dbhost = sc.nextLine();
+			System.out.println("Inserisci lo user del DB");
+			String dbuser = sc.nextLine();
+			System.out.println("Inserisci la password del DB");
+			String dbpsw = sc.nextLine();
+			dbcredentials = remote.getDbmsCredential(dbhost, dbuser, dbpsw);
+			
+	    }
+	 
+	 public void registerFailure()throws RemoteException{
+		 System.out.println("Username già esistente!");
+	 }
+	 
+	 public void loginFailure()throws RemoteException{
+		 System.out.println("Credenziali non valide!");
+	 }
+	 
+	 
 	 
 
 

@@ -4,6 +4,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.awt.event.ActionListener;
 
 import javax.swing.*;
@@ -17,7 +19,10 @@ public class ClientGUI {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		Operatore client = new Operatore();
+		Registry reg = LocateRegistry.getRegistry();
+		reg.rebind("CallbackClient", client);
 		
+		JButton buttonzero = new JButton("Insert DBMS credentials");
 		JButton buttonone = new JButton("Research an Area");
 		JButton buttontwo = new JButton("Register as an operator");
 		JButton buttonthree = new JButton("Login as an operator");
@@ -29,6 +34,18 @@ public class ClientGUI {
 		
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+		
+		 buttonzero.addActionListener(new ActionListener() {
+	            
+	            public void actionPerformed(ActionEvent e) {
+	                try {
+	                	client.getDbmsCredential();
+					} catch (RemoteException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					};
+	            }
+	        });
 		
 		 buttonone.addActionListener(new ActionListener() {
 	            
@@ -47,7 +64,7 @@ public class ClientGUI {
 	            public void actionPerformed(ActionEvent e) {
 	                try {
 						client.registerUser();
-					} catch (RemoteException e1) {
+					} catch (RemoteException | NotBoundException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					};
@@ -59,7 +76,7 @@ public class ClientGUI {
 	            public void actionPerformed(ActionEvent e) {
 	                try {
 						client.loginUser();
-					} catch (RemoteException e1) {
+					} catch (RemoteException | NotBoundException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
@@ -121,6 +138,7 @@ public class ClientGUI {
 	            }
 	        });
 		
+		panel.add(buttonzero);
 		panel.add(buttonone);
 		panel.add(buttontwo);
 		panel.add(buttonthree);

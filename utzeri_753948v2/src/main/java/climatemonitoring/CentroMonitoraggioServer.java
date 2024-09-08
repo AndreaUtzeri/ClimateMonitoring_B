@@ -1,5 +1,7 @@
 package climatemonitoring;
 
+import java.rmi.AccessException;
+import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -20,23 +22,52 @@ import java.util.Scanner;
 public class CentroMonitoraggioServer extends UnicastRemoteObject implements InterfacciaServer {
 
 	private static final long serialVersionUID = 1L;
+	private String dbHost;
+    private String dbUser;
+    private String dbPassword;
+    
 	
-	public CentroMonitoraggioServer() throws RemoteException{}
+	public CentroMonitoraggioServer() throws RemoteException{
+    	
+	}
 	
-	public void getDbmsCredential(String dbHost, String dbUser, String dbPassword) throws RemoteException {
-        
+	
+	
+	public boolean getDbmsCredential(String dbHost, String dbUser, String dbPassword) throws RemoteException {
+		this.dbHost = dbHost;
+        this.dbUser = dbUser;
+        this.dbPassword = dbPassword;
+        System.out.println("prova per vedere se le credenziali vengono passate");
+        return true;
     }
+	public String getdbHost() {
+		return dbHost;
+	}
+	public String getdbUser() {
+		return dbUser;
+	}
+	public String getdbPassword() {
+		return dbPassword;
+	}
+	
 	
 	
 	// Metodo per registrare un nuovo utente
-    public boolean registerUser(String username, String password) throws RemoteException {
-        return Register.registerUserDelegation(username, password);
+    public boolean registerUser(String username, String password) throws RemoteException, NotBoundException {
+    	Registry reg = LocateRegistry.getRegistry();
+    	
+		ClientInterface callback = (ClientInterface)reg.lookup("CallbackClient");
+    	
+        return Register.registerUserDelegation(username, password, callback);
     }
 
 	 
 	 // Metodo per autenticare un utente
-	    public boolean loginUser(String username, String password) throws RemoteException {
-	        return Login.loginUserDelegation(username, password);
+	    public boolean loginUser(String username, String password) throws RemoteException, NotBoundException {
+	    	Registry reg = LocateRegistry.getRegistry();
+	    	
+			ClientInterface callback = (ClientInterface)reg.lookup("CallbackClient");
+	        return Login.loginUserDelegation(username, password, callback);
 	    }
 	    
 	    

@@ -9,7 +9,8 @@ import java.sql.SQLException;
 
 public class Login {
 	// Metodo per autenticare un utente
-    public static boolean loginUserDelegation(String username, String password) throws RemoteException {
+	
+    public static boolean loginUserDelegation(String username, String password, ClientInterface callback) throws RemoteException {
         // Connessione al database
         String url = "jdbc:postgresql://localhost:5432/ClimateMonitor";
         String user = "postgres";
@@ -29,10 +30,10 @@ public class Login {
 
             // Se esiste il dato, il login è valido
             if (rs.next()) {
-                System.out.println("Login avvenuto con successo!");
+                callback.loginSuccess();
                 return true;
             } else {
-                System.out.println("Credenziali non valide!");
+                callback.loginFailure();
                 return false;
             }
 
