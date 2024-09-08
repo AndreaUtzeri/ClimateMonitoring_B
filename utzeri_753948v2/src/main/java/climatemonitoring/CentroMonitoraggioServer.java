@@ -53,7 +53,7 @@ public class CentroMonitoraggioServer extends UnicastRemoteObject implements Int
 	
 	
 	// Metodo per registrare un nuovo utente
-    public boolean registerUser(String username, String password) throws RemoteException, NotBoundException {
+    public String registerUser(String username, String password) throws RemoteException, NotBoundException {
     	Registry reg = LocateRegistry.getRegistry();
     	
 		ClientInterface callback = (ClientInterface)reg.lookup("CallbackClient");
@@ -63,7 +63,7 @@ public class CentroMonitoraggioServer extends UnicastRemoteObject implements Int
 
 	 
 	 // Metodo per autenticare un utente
-	    public boolean loginUser(String username, String password) throws RemoteException, NotBoundException {
+	    public String loginUser(String username, String password) throws RemoteException, NotBoundException {
 	    	Registry reg = LocateRegistry.getRegistry();
 	    	
 			ClientInterface callback = (ClientInterface)reg.lookup("CallbackClient");
@@ -99,8 +99,8 @@ public class CentroMonitoraggioServer extends UnicastRemoteObject implements Int
 	        InserisciParametri.inserisciParametriClimaticiDelegation(username);
 	    }
 	    
-	    public void visualizzaAreaGeografica(String area)throws RemoteException {
-	    	VisualizzaArea.visualizzaAreaDelegation(area);
+	    public String visualizzaAreaGeografica(String area)throws RemoteException {
+	    	return VisualizzaArea.visualizzaAreaDelegation(area);
 	    }
 
 

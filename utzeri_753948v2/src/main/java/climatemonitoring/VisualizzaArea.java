@@ -13,7 +13,7 @@ public class VisualizzaArea {
     private static final String PASSWORD = "!sqlpassword";
 
 
-    public static void visualizzaAreaDelegation(String area) {
+    public static String visualizzaAreaDelegation(String area) {
         // Query per cercare i dati in base all'area
         String query = "SELECT * FROM parametriclimatici WHERE area = ?";
         String risultato="";
@@ -47,11 +47,12 @@ public class VisualizzaArea {
                 risultato+="\n"+"----------------------------";
             }
             
+            
 
         } catch (SQLException e) {
             e.printStackTrace();
-            System.out.println("Errore");
+            return "Errore";
         }
-        System.out.println(risultato);
+        return risultato;
     }
 }

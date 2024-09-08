@@ -10,7 +10,7 @@ import java.sql.SQLException;
 public class Login {
 	// Metodo per autenticare un utente
 	
-    public static boolean loginUserDelegation(String username, String password, ClientInterface callback) throws RemoteException {
+    public static String loginUserDelegation(String username, String password, ClientInterface callback) throws RemoteException {
         // Connessione al database
         String url = "jdbc:postgresql://localhost:5432/ClimateMonitor";
         String user = "postgres";
@@ -31,15 +31,15 @@ public class Login {
             // Se esiste il dato, il login è valido
             if (rs.next()) {
                 callback.loginSuccess();
-                return true;
+                return username;
             } else {
                 callback.loginFailure();
-                return false;
+                return "login non andato a buon fine";
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            return "errore nel login";
         }
     }
 }

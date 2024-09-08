@@ -12,7 +12,7 @@ public class Operatore extends UnicastRemoteObject implements ClientInterface {
 	
 	private InterfacciaServer remote;
 	private Scanner sc = new Scanner(System.in);
-	boolean id = false;
+	String id ="";
 	boolean dbcredentials = false;
 	
 	public Operatore() throws RemoteException, NotBoundException {
@@ -40,7 +40,7 @@ public class Operatore extends UnicastRemoteObject implements ClientInterface {
 				System.out.println("Non hai effettuato l'accesso al database.");
 				return;
 			}
-		 if (id != false){
+		 if (!id.equals("")){
 	          System.out.println("Inserisci il nome del centro di monitoraggio che desideri registrare al sistema.");
 	          String name = sc.nextLine();
 	          System.out.println("Inserisci il suo indirizzo.");
@@ -57,7 +57,7 @@ public class Operatore extends UnicastRemoteObject implements ClientInterface {
 				System.out.println("Non hai effettuato l'accesso al database.");
 				return;
 			}
-		 if(id != false){
+		 if(!id.equals("")){
 		      System.out.println("Inserisci il tuo nome utente.");
 		      String associateuser = sc.nextLine();
 	          System.out.println("Inserisci il nome del centro di monitoraggio al quale desideri associarti.");
@@ -106,7 +106,7 @@ public class Operatore extends UnicastRemoteObject implements ClientInterface {
 		 System.out.println("Inserisci il tuo nome utente.");
 		 String username = sc.nextLine();
 		 
-		  if(id != false) {
+		  if(!id.equals("")) {
     		  remote.inserisciParametriClimatici(username);
     	  }
     	  else {
@@ -115,18 +115,18 @@ public class Operatore extends UnicastRemoteObject implements ClientInterface {
 		  
 	 }
 	 
-	 public void visualizzaAreaGeografica()throws RemoteException{
+	 public String visualizzaAreaGeografica()throws RemoteException{
 		 if(dbcredentials == false) {
-				System.out.println("Non hai effettuato l'accesso al database.");
-				return;
+				return "Non hai effettuato l'accesso al database.";
+				
 			}
 		 System.out.println("Inserisci il nome dell'area della quale desideri visualizzare i parametri climatici registrati.");
 		 String area = sc.nextLine();
-		 remote.visualizzaAreaGeografica(area);
+		 return remote.visualizzaAreaGeografica(area);
 	 }
 	 
 	 public void logout() {
-		 id = false;
+		 id = "";
 		 System.out.println("Logout avvenuto con successo!");
 	 }
 	 
