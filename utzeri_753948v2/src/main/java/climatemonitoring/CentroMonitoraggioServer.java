@@ -78,8 +78,8 @@ public class CentroMonitoraggioServer extends UnicastRemoteObject implements Int
 	    }
 	    
 	    // Metodo per associare un utente a un centro di monitoraggio
-	    public void associaCentro(String username, String nomeCentro)throws RemoteException {
-	    	AssociaCentro.associaCentroDelegation(username, nomeCentro);
+	    public String associaCentro(String username, String nomeCentro)throws RemoteException {
+	    	return AssociaCentro.associaCentroDelegation(username, nomeCentro);
 	    }   
 	    
 	    public void cercaAreaGeografica(boolean cercaPerNome, String denominazione, String coordinate) throws RemoteException {
@@ -88,15 +88,15 @@ public class CentroMonitoraggioServer extends UnicastRemoteObject implements Int
 	    
 	    
 	 // Funzione per registrare un centro di monitoraggio
-	    public void registraCentro(String nomeCentro, String indirizzo)throws RemoteException {
-	        RegistraCentro.registraCentroDelegation(nomeCentro, indirizzo);
+	    public String registraCentro(String nomeCentro, String indirizzo,List<String> areeDiInteresse)throws RemoteException {
+	        return RegistraCentro.registraCentroDelegation(nomeCentro, indirizzo,areeDiInteresse);
 	    }
 	    
 	    
 	    
 	 // Metodo per inserire i parametri climatici per un'area di interesse
-	    public void inserisciParametriClimatici(String username) throws RemoteException {
-	        InserisciParametri.inserisciParametriClimaticiDelegation(username);
+	    public String inserisciParametriClimatici(String username, String area, int vento, int umidita, int pressione, int temperatura, int precipitazioni, int altitudineGhiacciai, int massaGhiacciai, String note) throws RemoteException {
+	       return InserisciParametri.inserisciParametriClimaticiDelegation(username,  area,  vento,  umidita,  pressione,  temperatura,  precipitazioni,  altitudineGhiacciai,  massaGhiacciai,note);
 	    }
 	    
 	    public String visualizzaAreaGeografica(String area)throws RemoteException {

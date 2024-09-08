@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Scanner;
 
 public class RegistraCentro {
-	// Funzione per registrare un centro di monitoraggio
-    public static void registraCentroDelegation(String nomeCentro, String indirizzo)throws RemoteException {
+    // Funzione per registrare un centro di monitoraggio
+    public static String registraCentroDelegation(String nomeCentro, String indirizzo, List<String> areeDiInteresse) throws RemoteException {
         String url = "jdbc:postgresql://localhost:5432/ClimateMonitor";
         String user = "postgres";
         String password = "!sqlpassword";
@@ -28,20 +28,17 @@ public class RegistraCentro {
             insertCentroStmt.setString(2, indirizzo);
             insertCentroStmt.executeUpdate();
 
-            System.out.println("Centro di monitoraggio registrato con successo!");
-            
-
+            // Aggiungi aree di interesse
+            aggiungiAree(nomeCentro, areeDiInteresse);
+            return "Centro di monitoraggio registrato con successo!";
         } catch (SQLException e) {
             e.printStackTrace();
+            return "Errore di SQLException";
         }
-        
-     // Raccogli e aggiungi aree di interesse
-        List<String> areeDiInteresse = raccogliAree();
-        aggiungiAree(nomeCentro, areeDiInteresse);
     }
- 
+
     // Funzione per aggiungere colonne in base al numero di aree di interesse
-    public static void aggiungiAree(String nomeCentro, List<String> areeDiInteresse)throws RemoteException {
+    public static void aggiungiAree(String nomeCentro, List<String> areeDiInteresse) throws RemoteException {
         String url = "jdbc:postgresql://localhost:5432/ClimateMonitor";
         String user = "postgres";
         String password = "!sqlpassword";
@@ -78,26 +75,5 @@ public class RegistraCentro {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-    
- // Funzione per raccogliere le aree di interesse dall'utente
-    public static List<String> raccogliAree() throws RemoteException {
-        Scanner scanner = new Scanner(System.in);
-        List<String> areeDiInteresse = new ArrayList<>();
-        boolean continua = true;
-
-        while (continua) {
-            System.out.print("Inserisci un'area di interesse: ");
-            String area = scanner.nextLine();
-            areeDiInteresse.add(area);
-
-            System.out.print("Vuoi inserire un'altra area? (sì/no): ");
-            String risposta = scanner.nextLine();
-            if (!risposta.equalsIgnoreCase("sì")) {
-                continua = false;
-            }
-        }
-
-        return areeDiInteresse;
     }
 }

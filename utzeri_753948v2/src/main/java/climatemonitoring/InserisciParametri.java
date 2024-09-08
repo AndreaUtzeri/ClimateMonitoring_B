@@ -8,16 +8,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Scanner;
 
 public class InserisciParametri {
-	// Metodo per inserire i parametri climatici per un'area di interesse
-    public static void inserisciParametriClimaticiDelegation(String username) throws RemoteException {
+
+    // Metodo per inserire i parametri climatici per un'area di interesse
+    public static String inserisciParametriClimaticiDelegation(String username, String area, int vento, int umidita, int pressione, int temperatura, int precipitazioni, int altitudineGhiacciai, int massaGhiacciai, String note) throws RemoteException {
         String url = "jdbc:postgresql://localhost:5432/ClimateMonitor";
         String user = "postgres";
         String dbPassword = "!sqlpassword";
-
-        Scanner scanner = new Scanner(System.in);
 
         try (Connection conn = DriverManager.getConnection(url, user, dbPassword)) {
             // Verifica che l'utente sia associato a un centro di monitoraggio
@@ -27,15 +25,10 @@ public class InserisciParametri {
                 ResultSet rsCentro = stmtCentro.executeQuery();
 
                 if (!rsCentro.next() || rsCentro.getString("centro") == null) {
-                    System.out.println("Errore: non sei associato a nessun centro di monitoraggio.");
-                    
+                    return "Errore: non sei associato a nessun centro di monitoraggio.";
                 }
 
                 String nomeCentro = rsCentro.getString("centro");
-
-                // Chiedi all'utente di inserire l'area di interesse
-                System.out.print("Inserisci l'area di interesse: ");
-                String area = scanner.nextLine();
 
                 // Controlla quante colonne "Area" esistono già
                 String countAreeQuery = "SELECT COUNT(*) FROM information_schema.columns " +
@@ -50,8 +43,7 @@ public class InserisciParametri {
                 }
 
                 if (numColonneAree <= 0) {
-                    System.out.println("Errore: non ci sono colonne area disponibili nella tabella CentriMonitoraggio.");
-                    
+                    return "Errore: non ci sono colonne area disponibili nella tabella CentriMonitoraggio.";
                 }
 
                 // Costruisci dinamicamente la query per verificare l'area
@@ -73,35 +65,9 @@ public class InserisciParametri {
                     ResultSet rsArea = stmtArea.executeQuery();
 
                     if (!rsArea.next()) {
-                        System.out.println("Errore: quest'area non è associata al centro di monitoraggio " + nomeCentro);
-                        
+                        return "Errore: quest'area non è associata al centro di monitoraggio " + nomeCentro;
                     }
                 }
-
-                // Chiedi all'utente di inserire i parametri climatici
-                System.out.print("Inserisci il valore per vento (1-5): ");
-                int vento = getValidatedInput(scanner);
-
-                System.out.print("Inserisci il valore per umidità (1-5): ");
-                int umidità = getValidatedInput(scanner);
-
-                System.out.print("Inserisci il valore per pressione (1-5): ");
-                int pressione = getValidatedInput(scanner);
-
-                System.out.print("Inserisci il valore per temperatura (1-5): ");
-                int temperatura = getValidatedInput(scanner);
-
-                System.out.print("Inserisci il valore per precipitazione (1-5): ");
-                int precipitazioni = getValidatedInput(scanner);
-
-                System.out.print("Inserisci il valore per altitudine dei ghiacciai (1-5): ");
-                int altitudineGhiacciai = getValidatedInput(scanner);
-
-                System.out.print("Inserisci il valore per massa dei ghiacciai (1-5): ");
-                int massaGhiacciai = getValidatedInput(scanner);
-
-                System.out.print("Inserisci eventuali note: ");
-                String note = scanner.nextLine();
 
                 // Ottieni la data e ora corrente
                 LocalDateTime now = LocalDateTime.now();
@@ -114,7 +80,7 @@ public class InserisciParametri {
                     stmtInserisci.setString(1, nomeCentro);
                     stmtInserisci.setString(2, area);
                     stmtInserisci.setInt(3, vento);
-                    stmtInserisci.setInt(4, umidità);
+                    stmtInserisci.setInt(4, umidita);
                     stmtInserisci.setInt(5, pressione);
                     stmtInserisci.setInt(6, temperatura);
                     stmtInserisci.setInt(7, precipitazioni);
@@ -124,32 +90,11 @@ public class InserisciParametri {
                     stmtInserisci.setString(11, data); // Aggiungi la data corrente
 
                     stmtInserisci.executeUpdate();
-                    System.out.println("Parametri climatici inseriti con successo!");
                 }
+                return "Parametri aggiunti con successo";
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Errore");
+            return "Errore durante l'inserimento dei parametri climatici.";
         }
-    }
-
-
-    
-    // Metodo per validare l'input e assicurarsi che sia un numero intero tra 1 e 5
-    private static int getValidatedInput(Scanner scanner) {
-        int valore;
-        while (true) {
-            try {
-                valore = Integer.parseInt(scanner.nextLine());
-                if (valore >= 1 && valore <= 5) {
-                    break;
-                } else {
-                    System.out.print("Errore: inserisci un numero tra 1 e 5: ");
-                }
-            } catch (NumberFormatException e) {
-                System.out.print("Errore: inserisci un numero valido: ");
-            }
-        }
-        return valore;
     }
 }

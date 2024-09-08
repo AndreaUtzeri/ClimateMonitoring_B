@@ -5,7 +5,10 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.List;
 import java.util.Scanner;
+
+import javax.swing.JOptionPane;
 
 public class Operatore extends UnicastRemoteObject implements ClientInterface {
 
@@ -35,85 +38,72 @@ public class Operatore extends UnicastRemoteObject implements ClientInterface {
         remote.cercaAreaGeografica(byname,den, coordinates);
 	}
 	
-	 public void registraCentro() throws RemoteException {
+	 public String registraCentro(String centro,String indirizzo,List<String> areeDiInteresse) throws RemoteException {
 		 if(dbcredentials == false) {
-				System.out.println("Non hai effettuato l'accesso al database.");
-				return;
+				return "Non hai effettuato l'accesso al database.";
+				
 			}
 		 if (!id.equals("")){
-	          System.out.println("Inserisci il nome del centro di monitoraggio che desideri registrare al sistema.");
-	          String name = sc.nextLine();
-	          System.out.println("Inserisci il suo indirizzo.");
-	          String address = sc.nextLine();
-	          remote.registraCentro(name, address);
+	          
+	          return remote.registraCentro(centro, indirizzo,areeDiInteresse);
 	    }else{
-         System.out.println("Non hai effettuato il login");
+         return "Non hai effettuato il login";
        }
 
 	}
 	 
-	 public void associaCentro() throws RemoteException{
-		 if(dbcredentials == false) {
-				System.out.println("Non hai effettuato l'accesso al database.");
-				return;
-			}
-		 if(!id.equals("")){
-		      System.out.println("Inserisci il tuo nome utente.");
-		      String associateuser = sc.nextLine();
-	          System.out.println("Inserisci il nome del centro di monitoraggio al quale desideri associarti.");
-	          String associatecenter = sc.nextLine();
-	          remote.associaCentro(associateuser, associatecenter);
-	          
+	 public String associaCentro(String associateCenter) throws RemoteException {
+	        if (!dbcredentials) {
+	            return "Non hai effettuato l'accesso al database.";
 	        }
-	        else{
-	          System.out.println("Non hai effettuato il login");
+
+	        if (!id.equals("")) {
+	            if (associateCenter != null) {
+	                // Chiamata al metodo remoto, i parametri vengono passati dalla GUI
+	                
+	                return remote.associaCentro(id, associateCenter);
+	            } else {
+	                return "\nParametri non validi.";
+	            }
+	        } else {
+	            return "\nNon hai effettuato il login.";
 	        }
-	 }
+	    }
+
 	 
-	 public void loginUser() throws RemoteException, NotBoundException{
-		 if(dbcredentials == false) {
-				System.out.println("Non hai effettuato l'accesso al database.");
-				return;
-			}
-		 System.out.println("Inserisci il tuo nome utente.");
-	    	String userlog = sc.nextLine();
-	    	System.out.println("Inserisci la tua password.");
-	    	String userpass = sc.nextLine();
-	        id=remote.loginUser(userlog, userpass);
-	 }
+	 public String loginUser(String username, String password) throws RemoteException, NotBoundException {
+		    if (!dbcredentials) {
+		        return "Non hai effettuato l'accesso al database.";
+		    }
+		    
+		    // Effettua il login tramite i parametri passati dalla GUI
+		    id = remote.loginUser(username, password);
+		    
+		    if (!id.isEmpty()) {
+		        return "Login avvenuto con successo!";
+		    } else {
+		        return "Credenziali non valide!";
+		    }
+		}
 	 
 	 
-	 public void registerUser() throws RemoteException, NotBoundException{
+	 public String registerUser(String username,String password) throws RemoteException, NotBoundException{
 		 
 		 if(dbcredentials == false) {
-				System.out.println("Non hai effettuato l'accesso al database.");
-				return;
+				return"Non hai effettuato l'accesso al database.";
+				
 			}
-		 System.out.println("Inserisci il nome utente con il quale desideri registrarti.");
-	    	String user = sc.nextLine();
-	    	System.out.println("Inserisci una password da associare al tuo account.");
-	    	String pass = sc.nextLine();
-	        id=remote.registerUser(user, pass);
+	        return remote.registerUser(username, password);
 		 
 	 }
 	 
-	 public void inserisciParametriClimatici()throws RemoteException{
-		 
-		 if(dbcredentials == false) {
-				System.out.println("Non hai effettuato l'accesso al database.");
-				return;
-			}
-		 System.out.println("Inserisci il tuo nome utente.");
-		 String username = sc.nextLine();
-		 
-		  if(!id.equals("")) {
-    		  remote.inserisciParametriClimatici(username);
-    	  }
-    	  else {
-    		  System.out.print("Non hai effettuato il login");
-    	  }
-		  
-	 }
+	 public String inserisciParametriClimatici(String area, int vento, int umidita, int pressione, int temperatura, int precipitazioni, int altitudineGhiacciai, int massaGhiacciai, String note) throws RemoteException {
+	        if (dbcredentials && !id.equals("")) {
+	           return remote.inserisciParametriClimatici(id,area, vento, umidita, pressione, temperatura, precipitazioni, altitudineGhiacciai, massaGhiacciai, note);
+	        } else {
+	            return "DBMS non configurato o login non effettuato.";
+	        }
+	    }
 	 
 	 public String visualizzaAreaGeografica()throws RemoteException{
 		 if(dbcredentials == false) {
