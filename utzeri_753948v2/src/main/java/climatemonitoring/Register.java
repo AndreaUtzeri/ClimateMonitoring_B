@@ -13,10 +13,10 @@ public class Register {
 	
 	// Metodo per registrare un nuovo utente
     public static String registerUserDelegation(String username, String password, ClientInterface callback) throws RemoteException {
-        // Connessione al database
-        String url = "jdbc:postgresql://localhost:5432/ClimateMonitor";
-        String user = "postgres";
-        String dbPassword = "!sqlpassword";
+    	CentroMonitoraggioServer get = new CentroMonitoraggioServer();
+    	String url = get.getdbHost();//"jdbc:postgresql://localhost:5432/ClimateMonitor";
+        String user = get.getdbUser();//"postgres";
+        String dbPassword = get.getdbPassword();//"!sqlpassword";
 
         // Query per verificare se l'utente esiste già
         String checkUserQuery = "SELECT COUNT(*) FROM operatoriregistrati WHERE username = ?";

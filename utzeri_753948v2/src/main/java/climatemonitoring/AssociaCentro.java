@@ -10,9 +10,10 @@ import java.sql.SQLException;
 public class AssociaCentro {
 	// Metodo per associare un utente a un centro di monitoraggio
     public static String associaCentroDelegation(String username, String nomeCentro)throws RemoteException {
-        String url = "jdbc:postgresql://localhost:5432/ClimateMonitor";
-        String user = "postgres";
-        String dbPassword = "!sqlpassword";
+        CentroMonitoraggioServer get = new CentroMonitoraggioServer();
+    	String url = get.getdbHost();//"jdbc:postgresql://localhost:5432/ClimateMonitor";
+        String user = get.getdbUser();//"postgres";
+        String dbPassword = get.getdbPassword();//"!sqlpassword";
         
         // Query per verificare se il centro esiste
         String queryCentro = "SELECT nome FROM CentriMonitoraggio WHERE nome = ?";

@@ -13,9 +13,10 @@ public class InserisciParametri {
 
     // Metodo per inserire i parametri climatici per un'area di interesse
     public static String inserisciParametriClimaticiDelegation(String username, String area, int vento, int umidita, int pressione, int temperatura, int precipitazioni, int altitudineGhiacciai, int massaGhiacciai, String note) throws RemoteException {
-        String url = "jdbc:postgresql://localhost:5432/ClimateMonitor";
-        String user = "postgres";
-        String dbPassword = "!sqlpassword";
+    	CentroMonitoraggioServer get = new CentroMonitoraggioServer();
+    	String url = get.getdbHost();//"jdbc:postgresql://localhost:5432/ClimateMonitor";
+        String user = get.getdbUser();//"postgres";
+        String dbPassword = get.getdbPassword();//"!sqlpassword";
 
         try (Connection conn = DriverManager.getConnection(url, user, dbPassword)) {
             // Verifica che l'utente sia associato a un centro di monitoraggio

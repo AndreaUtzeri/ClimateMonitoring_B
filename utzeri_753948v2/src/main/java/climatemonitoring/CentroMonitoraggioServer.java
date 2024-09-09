@@ -64,10 +64,13 @@ public class CentroMonitoraggioServer extends UnicastRemoteObject implements Int
 	 
 	 // Metodo per autenticare un utente
 	    public String loginUser(String username, String password) throws RemoteException, NotBoundException {
-	    	Registry reg = LocateRegistry.getRegistry();
+	    	synchronized (this) {
+	    		Registry reg = LocateRegistry.getRegistry();
+		    	
+				ClientInterface callback = (ClientInterface)reg.lookup("CallbackClient");
+		        return Login.loginUserDelegation(username, password, callback);
+	    	}
 	    	
-			ClientInterface callback = (ClientInterface)reg.lookup("CallbackClient");
-	        return Login.loginUserDelegation(username, password, callback);
 	    }
 	    
 	    
@@ -79,24 +82,36 @@ public class CentroMonitoraggioServer extends UnicastRemoteObject implements Int
 	    
 	    // Metodo per associare un utente a un centro di monitoraggio
 	    public String associaCentro(String username, String nomeCentro)throws RemoteException {
-	    	return AssociaCentro.associaCentroDelegation(username, nomeCentro);
+	    	synchronized (this) {
+	    		return AssociaCentro.associaCentroDelegation(username, nomeCentro);
+	    	}
+	    	
 	    }   
 	    
 	    public void cercaAreaGeografica(boolean cercaPerNome, String denominazione, String coordinate) throws RemoteException {
-	        CercaArea.cercaAreaGeograficaDelegation(cercaPerNome, denominazione, coordinate);
+	    	synchronized (this) {
+	    		CercaArea.cercaAreaGeograficaDelegation(cercaPerNome, denominazione, coordinate);
+	    	}
+	    	
 	    }
 	    
 	    
 	 // Funzione per registrare un centro di monitoraggio
 	    public String registraCentro(String nomeCentro, String indirizzo,List<String> areeDiInteresse)throws RemoteException {
-	        return RegistraCentro.registraCentroDelegation(nomeCentro, indirizzo,areeDiInteresse);
+	    	synchronized (this) {
+	    		return RegistraCentro.registraCentroDelegation(nomeCentro, indirizzo,areeDiInteresse);
+	    	}
+	    	
 	    }
 	    
 	    
 	    
 	 // Metodo per inserire i parametri climatici per un'area di interesse
 	    public String inserisciParametriClimatici(String username, String area, int vento, int umidita, int pressione, int temperatura, int precipitazioni, int altitudineGhiacciai, int massaGhiacciai, String note) throws RemoteException {
-	       return InserisciParametri.inserisciParametriClimaticiDelegation(username,  area,  vento,  umidita,  pressione,  temperatura,  precipitazioni,  altitudineGhiacciai,  massaGhiacciai,note);
+	    	synchronized (this) {
+	    		return InserisciParametri.inserisciParametriClimaticiDelegation(username,  area,  vento,  umidita,  pressione,  temperatura,  precipitazioni,  altitudineGhiacciai,  massaGhiacciai,note);
+	    	}
+	    	
 	    }
 	    
 	    public String visualizzaAreaGeografica(String area)throws RemoteException {
