@@ -128,14 +128,15 @@ public class Operatore extends UnicastRemoteObject implements ClientInterface {
 		 System.out.println("Login avvenuto con successo!");
 	 }
 	 
-	 public void getDbmsCredential() throws RemoteException {
-			System.out.println("Inserisci l'host del DB");
+	 public void getDbmsCredential(String dbhost,String dbuser,String dbpsw) throws RemoteException {
+			/*System.out.println("Inserisci l'host del DB");
 			String dbhost = sc.nextLine();
 			System.out.println("Inserisci lo user del DB");
 			String dbuser = sc.nextLine();
 			System.out.println("Inserisci la password del DB");
-			String dbpsw = sc.nextLine();
+			String dbpsw = sc.nextLine();*/
 			dbcredentials = remote.getDbmsCredential(dbhost, dbuser, dbpsw);
+			
 			
 	    }
 	 

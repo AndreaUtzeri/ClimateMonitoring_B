@@ -22,9 +22,9 @@ import java.util.Scanner;
 public class CentroMonitoraggioServer extends UnicastRemoteObject implements InterfacciaServer {
 
 	private static final long serialVersionUID = 1L;
-	private String dbHost;
-    private String dbUser;
-    private String dbPassword;
+	private static String dbHost;
+    private static String dbUser;
+    private static String dbPassword;
     
 	
 	public CentroMonitoraggioServer() throws RemoteException{
@@ -37,16 +37,16 @@ public class CentroMonitoraggioServer extends UnicastRemoteObject implements Int
 		this.dbHost = dbHost;
         this.dbUser = dbUser;
         this.dbPassword = dbPassword;
-        System.out.println("prova per vedere se le credenziali vengono passate");
+        System.out.println(dbHost +dbUser+dbPassword);
         return true;
     }
-	public String getdbHost() {
+	public static String getdbHost() {
 		return dbHost;
 	}
-	public String getdbUser() {
+	public static String getdbUser() {
 		return dbUser;
 	}
-	public String getdbPassword() {
+	public static String getdbPassword() {
 		return dbPassword;
 	}
 	

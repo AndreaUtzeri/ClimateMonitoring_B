@@ -34,7 +34,10 @@ public class ClientGUI {
         Registry reg = LocateRegistry.getRegistry();
         reg.rebind("CallbackClient", client);
 
+        // Bottone per inserire le credenziali DBMS
         JButton buttonzero = new JButton("Insert DBMS credentials");
+
+        // Altri bottoni (inizialmente nascosti)
         JButton buttonone = new JButton("Research an Area");
         JButton buttontwo = new JButton("Register as an operator");
         JButton buttonthree = new JButton("Login as an operator");
@@ -44,13 +47,23 @@ public class ClientGUI {
         JButton buttonseven = new JButton("Insert new climate parameters");
         JButton buttoneight = new JButton("View climate parameters registered for an area");
 
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        // Pannello per i bottoni
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
 
+        // Pannello per i messaggi di output
+        JPanel outputPanel = new JPanel();
+        outputPanel.setLayout(new BorderLayout());
         textArea = new JTextArea(10, 60);
         textArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(textArea);
+        outputPanel.add(scrollPane, BorderLayout.CENTER);
 
+        // Pannello per i parametri climatici (inizialmente nascosto)
+        JPanel paramPanel = new JPanel();
+        paramPanel.setLayout(new GridLayout(9, 2));
+
+        // Rimuovo i parametri climatici dalla GUI iniziale
         textFieldArea = new JTextField(20);
         textFieldVento = new JTextField(20);
         textFieldUmidita = new JTextField(20);
@@ -60,67 +73,60 @@ public class ClientGUI {
         textFieldAltitudineGhiacciai = new JTextField(20);
         textFieldMassaGhiacciai = new JTextField(20);
         textAreaNote = new JTextArea(5, 20);
+        // Parametri climatici non aggiunti al pannello inizialmente
 
-        JPanel paramPanel = new JPanel();
-        paramPanel.setLayout(new GridLayout(9, 2));
-        paramPanel.add(new JLabel("Area:"));
-        paramPanel.add(textFieldArea);
-        paramPanel.add(new JLabel("Vento:"));
-        paramPanel.add(textFieldVento);
-        paramPanel.add(new JLabel("Umidita:"));
-        paramPanel.add(textFieldUmidita);
-        paramPanel.add(new JLabel("Pressione:"));
-        paramPanel.add(textFieldPressione);
-        paramPanel.add(new JLabel("Temperatura:"));
-        paramPanel.add(textFieldTemperatura);
-        paramPanel.add(new JLabel("Precipitazioni:"));
-        paramPanel.add(textFieldPrecipitazioni);
-        paramPanel.add(new JLabel("Altitudine Ghiacciai:"));
-        paramPanel.add(textFieldAltitudineGhiacciai);
-        paramPanel.add(new JLabel("Massa Ghiacciai:"));
-        paramPanel.add(textFieldMassaGhiacciai);
-        paramPanel.add(new JLabel("Note:"));
-        paramPanel.add(new JScrollPane(textAreaNote));
+        // Layout principale del frame
+        frame.setLayout(new BorderLayout());
 
-        panel.add(buttonzero);
-        panel.add(buttonone);
-        panel.add(buttontwo);
-        panel.add(buttonthree);
-        panel.add(buttonfour);
-        panel.add(buttonfive);
-        panel.add(buttonsix);
-        panel.add(paramPanel); // Aggiungi il pannello dei parametri
-        panel.add(buttonseven);
-        panel.add(buttoneight);
-        panel.add(scrollPane);
+        // Aggiungi inizialmente solo il bottone delle credenziali
+        buttonPanel.add(buttonzero);
 
-        buttonsix.addActionListener(e -> {
-            JTextField centerNameField = new JTextField();
-            Object[] message = {
-                "Inserisci il nome del centro di monitoraggio:", centerNameField
-            };
-
-            int option = JOptionPane.showConfirmDialog(null, message, "Associa Centro", JOptionPane.OK_CANCEL_OPTION);
-            if (option == JOptionPane.OK_OPTION) {
-                String associatecenter = centerNameField.getText();
-                try {
-                    String result = client.associaCentro(associatecenter);
-                    appendToTextArea(result);
-                } catch (RemoteException e1) {
-                    e1.printStackTrace();
-                    appendToTextArea("\nErrore durante l'associazione al centro.");
-                }
-            }
-        });
-
+        // Azioni per il pulsante delle credenziali DBMS
         buttonzero.addActionListener(e -> {
-            try {
-                client.getDbmsCredential();
-            } catch (RemoteException e1) {
-                e1.printStackTrace();
+            // Richiedi le credenziali tramite un'interfaccia grafica
+            JTextField hostField = new JTextField();
+            JTextField userField = new JTextField();
+            JPasswordField passwordField = new JPasswordField();
+
+            JPanel dbmsPanel = new JPanel(new GridLayout(0, 1));
+            dbmsPanel.add(new JLabel("Host Database:"));
+            dbmsPanel.add(hostField);
+            dbmsPanel.add(new JLabel("Username:"));
+            dbmsPanel.add(userField);
+            dbmsPanel.add(new JLabel("Password:"));
+            dbmsPanel.add(passwordField);
+
+            int option = JOptionPane.showConfirmDialog(frame, dbmsPanel, "Enter DBMS Credentials", JOptionPane.OK_CANCEL_OPTION);
+            if (option == JOptionPane.OK_OPTION) {
+                String host = hostField.getText();
+                String username = userField.getText();
+                String password = new String(passwordField.getPassword());
+
+                if (host != null && username != null && password != null) {
+                    try {
+                        // Passa le credenziali al metodo getDbmsCredential
+                        client.getDbmsCredential(host, username, password);
+                        // Mostra solo i bottoni di ricerca, registrazione, login e logout
+                        buttonPanel.removeAll();
+                        buttonPanel.add(buttonone);
+                        buttonPanel.add(buttontwo);
+                        buttonPanel.add(buttonthree);
+                        buttonPanel.add(buttonfour);
+                        buttonPanel.add(buttoneight);  // View Climate Parameters
+                        frame.revalidate();  // Rendi visibili i bottoni aggiornati
+                        frame.repaint();
+                    } catch (RemoteException e1) {
+                        e1.printStackTrace();
+                    }
+                } else {
+                    textArea.append("Credenziali DBMS mancanti.\n");
+                }
+            } else {
+                textArea.append("Inserimento delle credenziali DBMS annullato.\n");
             }
         });
 
+        // Implementazioni degli altri bottoni
         buttonone.addActionListener(e -> {
             try {
                 client.cercaAreaGeografica();
@@ -167,6 +173,14 @@ public class ClientGUI {
                 try {
                     String result = client.loginUser(username, password);
                     textArea.append(result + "\n");
+
+                    // Mostra i bottoni aggiuntivi dopo il login
+                    buttonPanel.add(buttonseven); // Insert new climate parameters
+                    buttonPanel.add(buttonfive);  // Register a Monitoring Center
+                    buttonPanel.add(buttonsix);   // Associate to a Monitoring Center
+                    frame.revalidate();    // Rendi visibili i bottoni aggiornati
+                    frame.repaint();
+
                 } catch (RemoteException | NotBoundException e1) {
                     e1.printStackTrace();
                 }
@@ -180,91 +194,66 @@ public class ClientGUI {
             textArea.append("Logged out\n");
         });
 
-        buttonfive.addActionListener(e -> {
-            JTextField centroField = new JTextField();
-            JTextField indirizzoField = new JTextField();
-            JPanel panel2 = new JPanel(new GridLayout(0, 1));
-            panel2.add(new JLabel("Nome Centro:"));
-            panel2.add(centroField);
-            panel2.add(new JLabel("Indirizzo:"));
-            panel2.add(indirizzoField);
-
-            int result = JOptionPane.showConfirmDialog(null, panel2, "Registrazione Centro", JOptionPane.OK_CANCEL_OPTION);
-            if (result == JOptionPane.OK_OPTION) {
-                String nomeCentro = centroField.getText();
-                String indirizzo = indirizzoField.getText();
-                
-                // Raccolta delle aree di interesse
-                List<String> areeDiInteresse = new ArrayList<>();
-                boolean continua = true;
-
-                while (continua) {
-                    JTextField areaField = new JTextField();
-                    JPanel areaPanel = new JPanel(new GridLayout(0, 1));
-                    areaPanel.add(new JLabel("Inserisci un'area di interesse:"));
-                    areaPanel.add(areaField);
-
-                    int areaOption = JOptionPane.showConfirmDialog(null, areaPanel, "Aree di Interesse", JOptionPane.OK_CANCEL_OPTION);
-                    if (areaOption == JOptionPane.OK_OPTION) {
-                        String area = areaField.getText();
-                        if (area != null && !area.trim().isEmpty()) {
-                            areeDiInteresse.add(area);
-                        }
-                    }
-
-                    int risposta = JOptionPane.showConfirmDialog(null, "Vuoi inserire un'altra area?", "Aree di Interesse", JOptionPane.YES_NO_OPTION);
-                    if (risposta == JOptionPane.NO_OPTION) {
-                        continua = false;
-                    }
-                }
-
-                try {
-                    String resultMessage = client.registraCentro(nomeCentro, indirizzo, areeDiInteresse);
-                    appendToTextArea(resultMessage);
-                } catch (RemoteException ex) {
-                    ex.printStackTrace();
-                    appendToTextArea("Errore nella registrazione del centro.");
-                }
-            }
-        });
-
-
+        // Azione per il bottone "Inserisci nuovi parametri climatici"
         buttonseven.addActionListener(e -> {
-            try {
-                // Raccogli i dati dalla GUI
-                String area = textFieldArea.getText();
-                int vento = Integer.parseInt(textFieldVento.getText());
-                int umidita = Integer.parseInt(textFieldUmidita.getText());
-                int pressione = Integer.parseInt(textFieldPressione.getText());
-                int temperatura = Integer.parseInt(textFieldTemperatura.getText());
-                int precipitazioni = Integer.parseInt(textFieldPrecipitazioni.getText());
-                int altitudineGhiacciai = Integer.parseInt(textFieldAltitudineGhiacciai.getText());
-                int massaGhiacciai = Integer.parseInt(textFieldMassaGhiacciai.getText());
-                String note = textAreaNote.getText();
+            // Mostra una finestra per inserire i parametri climatici
+            JPanel paramDialogPanel = new JPanel(new GridLayout(9, 2));
+            JTextField areaField = new JTextField(20);
+            JTextField ventoField = new JTextField(20);
+            JTextField umiditaField = new JTextField(20);
+            JTextField pressioneField = new JTextField(20);
+            JTextField temperaturaField = new JTextField(20);
+            JTextField precipitazioniField = new JTextField(20);
+            JTextField altitudineGhiacciaiField = new JTextField(20);
+            JTextField massaGhiacciaiField = new JTextField(20);
+            JTextArea noteArea = new JTextArea(5, 20);
 
-                // Chiama il metodo remoto passando tutti i parametri
-                String result = client.inserisciParametriClimatici(area, vento, umidita, pressione, temperatura, precipitazioni, altitudineGhiacciai, massaGhiacciai, note);
-                textArea.append(result + "\n");
-            } catch (RemoteException ex) {
-                ex.printStackTrace();
-                textArea.append("Errore nell'inserimento dei parametri climatici.\n");
+            paramDialogPanel.add(new JLabel("Area:"));
+            paramDialogPanel.add(areaField);
+            paramDialogPanel.add(new JLabel("Vento:"));
+            paramDialogPanel.add(ventoField);
+            paramDialogPanel.add(new JLabel("Umidita:"));
+            paramDialogPanel.add(umiditaField);
+            paramDialogPanel.add(new JLabel("Pressione:"));
+            paramDialogPanel.add(pressioneField);
+            paramDialogPanel.add(new JLabel("Temperatura:"));
+            paramDialogPanel.add(temperaturaField);
+            paramDialogPanel.add(new JLabel("Precipitazioni:"));
+            paramDialogPanel.add(precipitazioniField);
+            paramDialogPanel.add(new JLabel("Altitudine Ghiacciai:"));
+            paramDialogPanel.add(altitudineGhiacciaiField);
+            paramDialogPanel.add(new JLabel("Massa Ghiacciai:"));
+            paramDialogPanel.add(massaGhiacciaiField);
+            paramDialogPanel.add(new JLabel("Note:"));
+            paramDialogPanel.add(new JScrollPane(noteArea));
+
+            int option = JOptionPane.showConfirmDialog(frame, paramDialogPanel, "Inserisci Parametri Climatici", JOptionPane.OK_CANCEL_OPTION);
+            if (option == JOptionPane.OK_OPTION) {
+                // Raccogli i dati
+                String area = areaField.getText();
+                int vento = Integer.parseInt(ventoField.getText());
+                int umidita = Integer.parseInt(umiditaField.getText());
+                int pressione = Integer.parseInt(pressioneField.getText());
+                int temperatura = Integer.parseInt(temperaturaField.getText());
+                int precipitazioni = Integer.parseInt(precipitazioniField.getText());
+                int altitudineGhiacciai = Integer.parseInt(altitudineGhiacciaiField.getText());
+                int massaGhiacciai = Integer.parseInt(massaGhiacciaiField.getText());
+                String note = noteArea.getText();
+
+                // Chiamata al metodo remoto per inserire i parametri climatici
+                try {
+                    String result = client.inserisciParametriClimatici(area, vento, umidita, pressione, temperatura, precipitazioni, altitudineGhiacciai, massaGhiacciai, note);
+                    textArea.append(result + "\n");
+                } catch (RemoteException e1) {
+                    e1.printStackTrace();
+                }
+            } else {
+                textArea.append("Inserimento dei parametri climatici annullato.\n");
             }
         });
 
-        buttoneight.addActionListener(e -> {
-            try {
-                String result = client.visualizzaAreaGeografica();
-                textArea.append("\n" + result);
-            } catch (RemoteException e1) {
-                e1.printStackTrace();
-            }
-        });
-
-        frame.add(panel);
+        frame.add(buttonPanel, BorderLayout.WEST);
+        frame.add(outputPanel, BorderLayout.CENTER);
         frame.setVisible(true);
-    }
-
-    public static void appendToTextArea(String message) {
-        textArea.append(message + "\n");
     }
 }

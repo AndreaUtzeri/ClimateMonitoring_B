@@ -13,10 +13,17 @@ public class InserisciParametri {
 
     // Metodo per inserire i parametri climatici per un'area di interesse
     public static String inserisciParametriClimaticiDelegation(String username, String area, int vento, int umidita, int pressione, int temperatura, int precipitazioni, int altitudineGhiacciai, int massaGhiacciai, String note) throws RemoteException {
-    	CentroMonitoraggioServer get = new CentroMonitoraggioServer();
-    	String url = get.getdbHost();//"jdbc:postgresql://localhost:5432/ClimateMonitor";
-        String user = get.getdbUser();//"postgres";
-        String dbPassword = get.getdbPassword();//"!sqlpassword";
+        // Verifica che i parametri siano compresi tra 1 e 5
+        if (!isValidRange(vento) || !isValidRange(umidita) || !isValidRange(pressione) || 
+            !isValidRange(temperatura) || !isValidRange(precipitazioni) || 
+            !isValidRange(altitudineGhiacciai) || !isValidRange(massaGhiacciai)) {
+            return "Errore: tutti i parametri devono essere compresi tra 1 e 5.";
+        }
+
+        CentroMonitoraggioServer get = new CentroMonitoraggioServer();
+        String url = get.getdbHost(); // "jdbc:postgresql://localhost:5432/ClimateMonitor";
+        String user = get.getdbUser(); // "postgres";
+        String dbPassword = get.getdbPassword(); // "!sqlpassword";
 
         try (Connection conn = DriverManager.getConnection(url, user, dbPassword)) {
             // Verifica che l'utente sia associato a un centro di monitoraggio
@@ -34,7 +41,7 @@ public class InserisciParametri {
                 // Controlla quante colonne "Area" esistono già
                 String countAreeQuery = "SELECT COUNT(*) FROM information_schema.columns " +
                         "WHERE table_name = 'centrimonitoraggio' AND column_name LIKE 'area%'";
-                
+
                 int numColonneAree = 0;
                 try (PreparedStatement stmtCount = conn.prepareStatement(countAreeQuery);
                      ResultSet rsCount = stmtCount.executeQuery()) {
@@ -47,7 +54,7 @@ public class InserisciParametri {
                     return "Errore: non ci sono colonne area disponibili nella tabella CentriMonitoraggio.";
                 }
 
-                // Costruisci dinamicamente la query per verificare l'area
+                // query per verificare l'area
                 StringBuilder queryAreaBuilder = new StringBuilder("SELECT 1 FROM CentriMonitoraggio WHERE nome = ? AND (");
 
                 for (int i = 1; i <= numColonneAree; i++) {
@@ -76,7 +83,7 @@ public class InserisciParametri {
                 String data = now.format(formatter);
 
                 // Inserisci i parametri climatici nella tabella
-                String queryInserisci = "INSERT INTO ParametriClimatici (centro, area, vento, umidità, pressione, temperatura, precipitazioni, altitudine_ghiacciai, massa_ghiacciai, note, data) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                String queryInserisci = "INSERT INTO ParametriClimatici (centro, area, vento, umidità, pressione, temperatura, precipitazioni, altitudine_ghiacciai, massa_ghacciai, note, data) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 try (PreparedStatement stmtInserisci = conn.prepareStatement(queryInserisci)) {
                     stmtInserisci.setString(1, nomeCentro);
                     stmtInserisci.setString(2, area);
@@ -97,5 +104,10 @@ public class InserisciParametri {
         } catch (SQLException e) {
             return "Errore durante l'inserimento dei parametri climatici.";
         }
+    }
+
+    // Metodo per verificare che un valore sia compreso tra 1 e 5
+    private static boolean isValidRange(int value) {
+        return value >= 1 && value <= 5;
     }
 }
