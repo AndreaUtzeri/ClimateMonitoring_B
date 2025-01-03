@@ -23,19 +23,14 @@ public class Operatore extends UnicastRemoteObject implements ClientInterface {
 		remote = (InterfacciaServer)reg.lookup("MonitoringCenter");
 	}
 	
-	public void cercaAreaGeografica() throws RemoteException {
+	public String cercaAreaGeografica(int scelta,String str) throws RemoteException {
 		
 		if(dbcredentials == false) {
 			System.out.println("Non hai effettuato l'accesso al database.");
-			return;
+			return "Non hai effettuato l'accesso al database.";
 		}
-		System.out.println("Desideri effettuare la ricerca dell'area tramite il nome? Digita 'true'. Altrimenti digita 'false'");
-    	boolean byname = sc.nextBoolean();
-    	System.out.println("Inserisci la denominazione dell'area che vuoi cercare.");
-    	String den = sc.nextLine();
-    	System.out.println("Inserisci le coordinate geografiche dell'area che vuoi cercare.");
-    	String coordinates = sc.nextLine();
-        remote.cercaAreaGeografica(byname,den, coordinates);
+		
+        return remote.cercaAreaGeografica(scelta,str);
 	}
 	
 	 public String registraCentro(String centro,String indirizzo,List<String> areeDiInteresse) throws RemoteException {
@@ -87,13 +82,13 @@ public class Operatore extends UnicastRemoteObject implements ClientInterface {
 		}
 	 
 	 
-	 public String registerUser(String username,String password) throws RemoteException, NotBoundException{
+	 public String registerUser(String username, String password, String nome, String cognome, String codiceFiscale, String email) throws RemoteException, NotBoundException{
 		 
 		 if(dbcredentials == false) {
 				return"Non hai effettuato l'accesso al database.";
 				
 			}
-	        return remote.registerUser(username, password);
+	        return remote.registerUser(username, password,nome,cognome,codiceFiscale,email);
 		 
 	 }
 	 
@@ -105,13 +100,12 @@ public class Operatore extends UnicastRemoteObject implements ClientInterface {
 	        }
 	    }
 	 
-	 public String visualizzaAreaGeografica()throws RemoteException{
+	 public String visualizzaAreaGeografica(String area)throws RemoteException{
 		 if(dbcredentials == false) {
 				return "Non hai effettuato l'accesso al database.";
 				
 			}
-		 System.out.println("Inserisci il nome dell'area della quale desideri visualizzare i parametri climatici registrati.");
-		 String area = sc.nextLine();
+		 
 		 return remote.visualizzaAreaGeografica(area);
 	 }
 	 

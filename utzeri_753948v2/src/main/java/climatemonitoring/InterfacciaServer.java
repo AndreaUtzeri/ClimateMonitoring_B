@@ -8,9 +8,9 @@ import java.util.List;
 
 public interface InterfacciaServer extends Remote {
 
-	 public String registerUser(String username, String password) throws RemoteException, NotBoundException ;
+	 public String registerUser(String username, String password, String nome, String cognome, String codiceFiscale, String email) throws RemoteException, NotBoundException ;
 	 public String loginUser(String username, String password) throws RemoteException, NotBoundException;
-	 public void cercaAreaGeografica(boolean cercaPerNome, String denominazione, String coordinate) throws RemoteException;
+	 public String cercaAreaGeografica(int tipoRicerca, String denominazione) throws RemoteException;
 	 public String registraCentro(String nomeCentro, String indirizzo,List<String> areeDiInteresse) throws RemoteException;
 	 public String associaCentro(String username, String nomeCentro) throws RemoteException;
 	 public String inserisciParametriClimatici(String username, String area, int vento, int umidita, int pressione, int temperatura, int precipitazioni, int altitudineGhiacciai, int massaGhiacciai, String note)throws RemoteException;

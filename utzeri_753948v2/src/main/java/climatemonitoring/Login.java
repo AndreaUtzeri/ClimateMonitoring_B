@@ -33,12 +33,17 @@ public class Login {
                 return username;
             } else {
                 callback.loginFailure();
-                return "login non andato a buon fine";
+                return "";
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return "errore nel login";
+        	e.printStackTrace();
+            if (e.getSQLState().equals("23505")) { // Codice SQL per violazione di chiave unica in PostgreSQL
+                return "Errore: username già registrato nel sistema.";
+            }else {
+                e.printStackTrace();
+                return "Errore di SQLException: " + e.getMessage();
+            }
         }
     }
 }

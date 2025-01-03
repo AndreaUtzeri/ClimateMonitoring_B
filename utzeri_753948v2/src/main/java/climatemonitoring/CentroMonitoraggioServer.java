@@ -53,12 +53,12 @@ public class CentroMonitoraggioServer extends UnicastRemoteObject implements Int
 	
 	
 	// Metodo per registrare un nuovo utente
-    public String registerUser(String username, String password) throws RemoteException, NotBoundException {
+    public String registerUser(String username, String password, String nome, String cognome, String codiceFiscale, String email) throws RemoteException, NotBoundException {
     	Registry reg = LocateRegistry.getRegistry();
     	
 		ClientInterface callback = (ClientInterface)reg.lookup("CallbackClient");
     	
-        return Register.registerUserDelegation(username, password, callback);
+        return Register.registerUserDelegation(username, password,nome,cognome,codiceFiscale,email, callback);
     }
 
 	 
@@ -88,9 +88,9 @@ public class CentroMonitoraggioServer extends UnicastRemoteObject implements Int
 	    	
 	    }   
 	    
-	    public void cercaAreaGeografica(boolean cercaPerNome, String denominazione, String coordinate) throws RemoteException {
+	    public String cercaAreaGeografica(int tipoRicerca, String denominazione) throws RemoteException {
 	    	synchronized (this) {
-	    		CercaArea.cercaAreaGeograficaDelegation(cercaPerNome, denominazione, coordinate);
+	    		return CercaArea.cercaAreaGeograficaDelegation(tipoRicerca, denominazione);
 	    	}
 	    	
 	    }

@@ -128,42 +128,105 @@ public class ClientGUI {
 
         // Implementazioni degli altri bottoni
         buttonone.addActionListener(e -> {
-            try {
-                client.cercaAreaGeografica();
-                textArea.append("\n");
-            } catch (RemoteException e1) {
-                e1.printStackTrace();
+            // Chiede all'utente se vuole cercare per Nome, Stato o Coordinate
+            Object[] options = {"Nome", "Stato", "Coordinate"};
+            int tipoRicerca = JOptionPane.showOptionDialog(null,
+                    "Come vuoi cercare?",
+                    "Seleziona metodo di ricerca",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.INFORMATION_MESSAGE,
+                    null, options, options[0]);
+
+            // Se l'utente annulla la selezione
+            if (tipoRicerca == JOptionPane.CLOSED_OPTION) {
+                textArea.append("Ricerca annullata.\n");
+                return;
+            }
+
+            // Imposta il messaggio del prompt in base alla scelta
+            String promptMessage;
+            switch (tipoRicerca) {
+                case 0: promptMessage = "Inserisci il nome:"; break;
+                case 1: promptMessage = "Inserisci il codice dello stato:"; break;
+                case 2: promptMessage = "Inserisci le coordinate (latitudine,longitudine):"; break;
+                default: return; // Caso improbabile
+            }
+
+            // Chiede all'utente di inserire la stringa di ricerca
+            JTextField inputField = new JTextField();
+            Object[] message = {promptMessage, inputField};
+            int option = JOptionPane.showConfirmDialog(null, message, "Ricerca", JOptionPane.OK_CANCEL_OPTION);
+
+            if (option == JOptionPane.OK_OPTION) {
+                String valoreRicerca = inputField.getText().trim();
+
+                if (!valoreRicerca.isEmpty()) {
+                    try {
+                        // Chiama il metodo cercaAreaGeografica passando il tipo di ricerca e il valore
+                        String result = client.cercaAreaGeografica(tipoRicerca, valoreRicerca);
+                        textArea.append(result + "\n");
+                    } catch (RemoteException e1) {
+                        e1.printStackTrace();
+                        textArea.append("Errore durante la ricerca.\n");
+                    }
+                } else {
+                    textArea.append("Ricerca annullata o valore non valido.\n");
+                }
+            } else {
+                textArea.append("Ricerca annullata.\n");
             }
         });
 
+
+
+
         buttontwo.addActionListener(e -> {
+            // Campi di input
             JTextField usernameField = new JTextField();
             JTextField passwordField = new JPasswordField();
+            JTextField nomeField = new JTextField();
+            JTextField cognomeField = new JTextField();
+            JTextField codiceFiscaleField = new JTextField();
+            JTextField emailField = new JTextField();
+
+            // Messaggio di input
             Object[] message = {
                 "Inserisci il tuo nome utente:", usernameField,
-                "Inserisci la tua password:", passwordField
+                "Inserisci la tua password:", passwordField,
+                "Inserisci il tuo nome:", nomeField,
+                "Inserisci il tuo cognome:", cognomeField,
+                "Inserisci il tuo codice fiscale:", codiceFiscaleField,
+                "Inserisci la tua email:", emailField
             };
 
+            // Finestra di dialogo
             int option = JOptionPane.showConfirmDialog(null, message, "Registrazione", JOptionPane.OK_CANCEL_OPTION);
             if (option == JOptionPane.OK_OPTION) {
                 String username = usernameField.getText();
                 String password = passwordField.getText();
+                String nome = nomeField.getText();
+                String cognome = cognomeField.getText();
+                String codiceFiscale = codiceFiscaleField.getText();
+                String email = emailField.getText();
 
-                if (username != null && password != null) {
+                // Controlla che i campi non siano vuoti
+                if (username.isEmpty() || password.isEmpty() || nome.isEmpty() || cognome.isEmpty() || codiceFiscale.isEmpty() || email.isEmpty()) {
+                    textArea.append("Tutti i campi sono obbligatori.\n");
+                } else {
                     try {
-                        String result = client.registerUser(username, password);
+                        // Chiamata al metodo remoto
+                        String result = client.registerUser(username, password, nome, cognome, codiceFiscale, email);
                         textArea.append(result + "\n");
                     } catch (RemoteException | NotBoundException e1) {
                         e1.printStackTrace();
                         textArea.append("Errore durante la registrazione.\n");
                     }
-                } else {
-                    textArea.append("Registrazione annullata.\n");
                 }
             } else {
                 textArea.append("Registrazione annullata.\n");
             }
         });
+
 
         buttonthree.addActionListener(e -> {
             String username = JOptionPane.showInputDialog(null, "Inserisci il tuo nome utente:");
@@ -190,9 +253,135 @@ public class ClientGUI {
         });
 
         buttonfour.addActionListener(e -> {
+            // Effettua il logout
             client.logout();
             textArea.append("Logged out\n");
+
+            // Rimuovi tutti i bottoni attualmente visibili
+            buttonPanel.removeAll();
+
+            // Aggiungi solo i bottoni disponibili prima del login
+            buttonPanel.add(buttonzero);  // Insert DBMS credentials
+            buttonPanel.add(buttonone);   // Research an Area
+            buttonPanel.add(buttontwo);   // Register as an operator
+            buttonPanel.add(buttonthree); // Login as an operator
+            buttonPanel.add(buttonfour);  // Logout
+
+            // Aggiorna l'interfaccia
+            frame.revalidate();
+            frame.repaint();
         });
+        
+        buttonfive.addActionListener(e -> {
+            // Pannello per raccogliere il nome del centro e l'indirizzo
+            JTextField centerNameField = new JTextField(20);
+            JTextField addressField = new JTextField(20);
+            JPanel centerPanel = new JPanel(new GridLayout(0, 1));
+            centerPanel.add(new JLabel("Nome del Centro:"));
+            centerPanel.add(centerNameField);
+            centerPanel.add(new JLabel("Indirizzo del Centro:"));
+            centerPanel.add(addressField);
+
+            // Primo dialogo per nome e indirizzo del centro
+            int option = JOptionPane.showConfirmDialog(
+                frame,
+                centerPanel,
+                "Inserisci i dettagli del centro di monitoraggio",
+                JOptionPane.OK_CANCEL_OPTION
+            );
+
+            if (option == JOptionPane.OK_OPTION) {
+                String centerName = centerNameField.getText().trim();
+                String address = addressField.getText().trim();
+
+                if (centerName.isEmpty() || address.isEmpty()) {
+                    textArea.append("Nome o indirizzo del centro mancanti.\n");
+                    return;
+                }
+
+                // Lista per raccogliere le aree di interesse
+                List<String> areeDiInteresse = new ArrayList<>();
+                boolean addMore = true;
+
+                while (addMore) {
+                    JTextField areaField = new JTextField(20);
+                    JPanel areaPanel = new JPanel(new GridLayout(0, 1));
+                    areaPanel.add(new JLabel("Inserisci un'area di interesse:"));
+                    areaPanel.add(areaField);
+
+                    int areaOption = JOptionPane.showConfirmDialog(
+                        frame,
+                        areaPanel,
+                        "Aggiungi Area di Interesse",
+                        JOptionPane.OK_CANCEL_OPTION
+                    );
+
+                    if (areaOption == JOptionPane.OK_OPTION) {
+                        String area = areaField.getText().trim();
+                        if (!area.isEmpty()) {
+                            areeDiInteresse.add(area);
+                        } else {
+                            textArea.append("Area di interesse non valida.\n");
+                        }
+                    } else {
+                        addMore = false;
+                    }
+
+                    // Chiedi se aggiungere un'altra area
+                    int continueOption = JOptionPane.showConfirmDialog(
+                        frame,
+                        "Vuoi aggiungere un'altra area di interesse?",
+                        "Continuare?",
+                        JOptionPane.YES_NO_OPTION
+                    );
+
+                    if (continueOption == JOptionPane.NO_OPTION) {
+                        addMore = false;
+                    }
+                }
+
+                // Verifica che ci siano aree di interesse
+                if (areeDiInteresse.isEmpty()) {
+                    textArea.append("Nessuna area di interesse inserita.\n");
+                    return;
+                }
+
+                // Passa i dati al metodo remoto
+                try {
+                    String result = client.registraCentro(centerName, address, areeDiInteresse);
+                    textArea.append(result + "\n");
+                } catch (RemoteException ex) {
+                    ex.printStackTrace();
+                    textArea.append("Errore durante la registrazione del centro di monitoraggio.\n");
+                }
+            } else {
+                textArea.append("Registrazione del centro annullata.\n");
+            }
+        });
+
+
+
+        
+        buttonsix.addActionListener(e -> {
+            // Chiedi all'utente di inserire il nome del centro
+            String associateCenter = JOptionPane.showInputDialog(frame, "Inserisci il nome del centro di monitoraggio a cui vuoi associarti:");
+
+            // Verifica che l'utente abbia inserito un nome valido
+            if (associateCenter != null && !associateCenter.trim().isEmpty()) {
+                try {
+                    // Passa il nome del centro al metodo associaCentro
+                    String result = client.associaCentro(associateCenter.trim());
+                    textArea.append(result + "\n"); // Mostra il risultato nell'area di testo
+                } catch (RemoteException ex) {
+                    ex.printStackTrace();
+                    textArea.append("Errore durante l'associazione al centro.\n");
+                }
+            } else {
+                textArea.append("Nome del centro non valido o annullato.\n");
+            }
+        });
+
+
 
         // Azione per il bottone "Inserisci nuovi parametri climatici"
         buttonseven.addActionListener(e -> {
@@ -249,6 +438,35 @@ public class ClientGUI {
                 }
             } else {
                 textArea.append("Inserimento dei parametri climatici annullato.\n");
+            }
+        });
+        
+     // Azione per il bottone "View climate parameters registered for an area"
+        buttoneight.addActionListener(e -> {
+            // Mostra una finestra di dialogo per chiedere il nome dell'area
+            JTextField areaField = new JTextField(20);
+            Object[] message = {
+                "Inserisci il nome dell'area:",
+                areaField
+            };
+
+            int option = JOptionPane.showConfirmDialog(frame, message, "Visualizza Area Geografica", JOptionPane.OK_CANCEL_OPTION);
+            if (option == JOptionPane.OK_OPTION) {
+                String area = areaField.getText().trim();
+                if (!area.isEmpty()) {
+                    try {
+                        // Chiamata al metodo visualizzaAreaGeografica dell'oggetto client
+                        String result = client.visualizzaAreaGeografica(area);
+                        textArea.append(result + "\n");
+                    } catch (RemoteException e1) {
+                        e1.printStackTrace();
+                        textArea.append("Errore durante la visualizzazione dell'area.\n");
+                    }
+                } else {
+                    textArea.append("Nome dell'area non valido.\n");
+                }
+            } else {
+                textArea.append("Visualizzazione area annullata.\n");
             }
         });
 
