@@ -14,7 +14,9 @@ public class InserisciParametri {
     // Metodo per inserire i parametri climatici per un'area di interesse
     public static String inserisciParametriClimaticiDelegation(String username, String area, int vento, int umidita, int pressione, int temperatura, int precipitazioni, int altitudineGhiacciai, int massaGhiacciai, String note) throws RemoteException {
         // Verifica che i parametri siano compresi tra 1 e 5
-        if (!isValidRange(vento) || !isValidRange(umidita) || !isValidRange(pressione) || 
+        
+    	System.out.print(area+vento+umidita+pressione+temperatura+precipitazioni +altitudineGhiacciai+massaGhiacciai+note);
+    	if (!isValidRange(vento) || !isValidRange(umidita) || !isValidRange(pressione) || 
             !isValidRange(temperatura) || !isValidRange(precipitazioni) || 
             !isValidRange(altitudineGhiacciai) || !isValidRange(massaGhiacciai)) {
             return "Errore: tutti i parametri devono essere compresi tra 1 e 5.";
@@ -83,7 +85,7 @@ public class InserisciParametri {
                 String data = now.format(formatter);
 
                 // Inserisci i parametri climatici nella tabella
-                String queryInserisci = "INSERT INTO ParametriClimatici (centro, area, vento, umidità, pressione, temperatura, precipitazioni, altitudine_ghiacciai, massa_ghacciai, note, data) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                String queryInserisci = "INSERT INTO ParametriClimatici (centro, area, vento, umidità, pressione, temperatura, precipitazioni, altitudine_ghiacciai, massa_ghiacciai, note, data) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 try (PreparedStatement stmtInserisci = conn.prepareStatement(queryInserisci)) {
                     stmtInserisci.setString(1, nomeCentro);
                     stmtInserisci.setString(2, area);
@@ -102,6 +104,8 @@ public class InserisciParametri {
                 return "Parametri aggiunti con successo";
             }
         } catch (SQLException e) {
+        	System.err.println("Errore durante l'inserimento dei parametri climatici: " + e.getMessage());
+            e.printStackTrace(); // Logga l'errore completo
             return "Errore durante l'inserimento dei parametri climatici.";
         }
     }

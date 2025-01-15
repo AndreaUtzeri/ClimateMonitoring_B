@@ -235,22 +235,28 @@ public class ClientGUI {
             if (username != null && password != null) {
                 try {
                     String result = client.loginUser(username, password);
-                    textArea.append(result + "\n");
 
-                    // Mostra i bottoni aggiuntivi dopo il login
-                    buttonPanel.add(buttonseven); // Insert new climate parameters
-                    buttonPanel.add(buttonfive);  // Register a Monitoring Center
-                    buttonPanel.add(buttonsix);   // Associate to a Monitoring Center
-                    frame.revalidate();    // Rendi visibili i bottoni aggiornati
-                    frame.repaint();
+                    if (result.equalsIgnoreCase("Login avvenuto con successo!")) { // Controlla se il login è riuscito
+                        textArea.append(result + "\n");
 
+                        // Mostra i bottoni aggiuntivi dopo il login
+                        buttonPanel.add(buttonseven); // Insert new climate parameters
+                        buttonPanel.add(buttonfive);  // Register a Monitoring Center
+                        buttonPanel.add(buttonsix);   // Associate to a Monitoring Center
+                        frame.revalidate();    // Rendi visibili i bottoni aggiornati
+                        frame.repaint();
+                    } else {
+                        textArea.append("Login fallito. Controlla username e password.\n");
+                    }
                 } catch (RemoteException | NotBoundException e1) {
                     e1.printStackTrace();
+                    textArea.append("Errore durante il tentativo di login.\n");
                 }
             } else {
                 textArea.append("Login annullato.\n");
             }
         });
+
 
         buttonfour.addActionListener(e -> {
             // Effettua il logout
@@ -266,11 +272,13 @@ public class ClientGUI {
             buttonPanel.add(buttontwo);   // Register as an operator
             buttonPanel.add(buttonthree); // Login as an operator
             buttonPanel.add(buttonfour);  // Logout
+            buttonPanel.add(buttoneight); // View Climate Parameters registered for an Area
 
             // Aggiorna l'interfaccia
             frame.revalidate();
             frame.repaint();
         });
+
         
         buttonfive.addActionListener(e -> {
             // Pannello per raccogliere il nome del centro e l'indirizzo

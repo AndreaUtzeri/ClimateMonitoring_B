@@ -15,7 +15,7 @@ public class CercaArea {
         String user = get.getdbUser();
         String dbPassword = get.getdbPassword();
 
-        double range = 100000.0; // Distanza di ricerca in metri
+        double range = 10000.0; // Distanza di ricerca in metri
 
         String searchByName = "SELECT name, country_name, coordinates FROM CoordinateMonitoraggio WHERE LOWER(name) = LOWER(?)";
         String searchByState = "SELECT name, country_name, coordinates FROM CoordinateMonitoraggio WHERE LOWER(country_code) = LOWER(?)";
